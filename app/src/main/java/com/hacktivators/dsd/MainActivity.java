@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
                         EditText url = (EditText) dialogBox.findViewById(R.id.et_url);
                         urlE = url.getText().toString();
                         Spinner loc=(Spinner) dialogBox.findViewById(R.id.storage);
-                        locX=loc.getSelectedItem().toString();
+                        //locX=loc.getSelectedItem().toString();
                         title=getFileName(urlE,0);
                         DownloadService ds=new DownloadService(MainActivity.this,title);
                         ds.execute(urlE);
