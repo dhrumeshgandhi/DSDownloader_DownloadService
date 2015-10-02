@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
     }
     private String getFileName(String url,int fullOrWExtOrWOExt){
         String name;
-        int s,e=0;
+        int s,e;
         s=url.lastIndexOf('/');
         e=url.length();
         if(fullOrWExtOrWOExt==1) e=url.lastIndexOf('.');
