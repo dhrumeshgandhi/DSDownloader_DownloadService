@@ -113,8 +113,8 @@ public class MainActivity extends Activity {
                 .show();
     }
     private String getFileName(String url,int fullOrWExtOrWOExt){
-        String name=null;
-        int s=0,e=0;
+        String name;
+        int s,e;
         s=url.lastIndexOf('/');
         e=url.length();
         if(fullOrWExtOrWOExt==1) e=url.lastIndexOf('.');
