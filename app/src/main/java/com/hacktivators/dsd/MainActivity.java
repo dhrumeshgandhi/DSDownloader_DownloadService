@@ -2,8 +2,11 @@ package com.hacktivators.dsd;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -31,15 +35,18 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 public class MainActivity extends Activity {
     Context context=this;
     ListView downloadList;
-    ArrayList<String> dList;
-    ArrayAdapter<String> dAdapter;
+    ArrayList<ListViewItem> dList;
+    ListViewAdpter dAdapter;
     String urlE,title,noDownloads,downloadFolder,
             proxyHost="10.10.0.23",
             proxyUser="3ce47",
@@ -54,15 +61,33 @@ public class MainActivity extends Activity {
     Menu optMenu;
     FloatingActionButton fab;
     boolean isProxyUsed=false,isAuthReq=false;
+    Intent i;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         downloadList=(ListView)findViewById(R.id.lvDownloadList);
         li=LayoutInflater.from(this);
-        dList=new ArrayList<String>();
-        dAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,dList);
+        dList=new ArrayList<ListViewItem>();
+        dAdapter=new ListViewAdpter(this,dList);
         downloadList.setAdapter(dAdapter);
+        downloadList.setOnItemLongClickListener(new ListView.OnItemLongClickListener(){
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ListViewItem item=(ListViewItem)parent.getItemAtPosition(position);
+                String path=item.getPath(),
+                        title=item.getTitle();
+                File file=new File(path,title);
+                Long size=file.length();
+                Toast.makeText(context,size.toString(),Toast.LENGTH_SHORT).show();
+                Uri uri= Uri.fromFile(file);
+                Intent i= new Intent();
+                i.setAction(Intent.ACTION_VIEW);
+                i.setDataAndType(uri,"*/*");
+                startActivity(i);
+                return true;
+            }
+        });
         progressB=(ProgressBar)findViewById(R.id.progressBar);
         progressB.setIndeterminate(false);
         tvCurrentDownload=(TextView)findViewById(R.id.tvCurrentDownload);
@@ -70,18 +95,25 @@ public class MainActivity extends Activity {
         noDownloads=getString(R.string.noDownloads);
         downloadFolder=getString(R.string.downloadFolderName);
         createDirIfNotExits(downloadFolder);
+        progressB.setIndeterminate(true);
         sysProperties=System.getProperties();
         fab=(FloatingActionButton)findViewById(R.id.btnFab);
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                openDialog(v);
+                openDialog(null);
             }
         });
+        if((i=getIntent())!=null && i.getAction()==Intent.ACTION_VIEW){
+            String url=i.getData().toString();
+            openDialog(url);
+        }
     }
-    public void openDialog(View v){
+    public void openDialog(final String link){
         dialogBox=li.inflate(R.layout.dialog, null);
+        final EditText url = (EditText) dialogBox.findViewById(R.id.et_url);
         final EditText saveTo=(EditText)dialogBox.findViewById(R.id.et_saveTo);
+        url.setText(link);
         saveTo.setText(Environment.getExternalStorageDirectory() + "/" + downloadFolder);
         new AlertDialog.Builder(this)
                 .setView(dialogBox)
@@ -92,7 +124,6 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String locX;
-                        EditText url = (EditText) dialogBox.findViewById(R.id.et_url);
                         urlE = url.getText().toString();
                         locX=saveTo.getText().toString();
                         Toast.makeText(context,locX,Toast.LENGTH_SHORT).show();
@@ -101,7 +132,9 @@ public class MainActivity extends Activity {
                         ds.execute(urlE);
                         title=checkFileName(title,locX);
                         Toast.makeText(context,title,Toast.LENGTH_SHORT).show();
-                        addToList(title);
+                        addToList(new ListViewItem(title,
+                                        Calendar.getInstance().getTime().toString(),
+                                        getFileSize(urlE),locX));
                         dialog.dismiss();
                     }
                 })
@@ -114,6 +147,9 @@ public class MainActivity extends Activity {
                 .create()
                 .show();
     }
+    private void download(){
+
+    }
     private String getFileName(String url,int fullOrWExtOrWOExt){
         String name;
         int s,e;
@@ -124,8 +160,13 @@ public class MainActivity extends Activity {
         name = url.substring(s+1,e);
         return name;
     }
-    private void addToList(String path){
-        dList.add(path);
+    private String getFileSize(String url){
+        String fileSize="None";
+
+        return fileSize;
+    }
+    private void addToList(ListViewItem info){
+        dList.add(info);
         dAdapter.notifyDataSetChanged();
     }
     @Override
@@ -262,6 +303,7 @@ public class MainActivity extends Activity {
             super.onPreExecute();
             tvCurrentDownload.setText(title);
             progressB.setVisibility(View.VISIBLE);
+
         }
         @Override
         protected void onProgressUpdate(Integer... progress) {
