@@ -8,5 +8,5 @@
     <string name="downloadError">Download Error: </string>
     <string name="downloadFolderName">Download_DSD</string>
     <string name="downloadDialogTitle">New Download</string>
-    <string name="downlaodDialogMessage">Add new Download Task</string>
+    <string name="downloadDialogMessage">Add new Download Task</string>
 </resources>

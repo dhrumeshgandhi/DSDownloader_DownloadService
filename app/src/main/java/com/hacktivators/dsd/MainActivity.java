@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
                 .setView(dialogBox)
                 .setIcon(R.mipmap.ic_launcher)
                 .setTitle(getString(R.string.downloadDialogTitle))
-                .setMessage(getString(R.string.downlaodDialogMessage))
+                .setMessage(getString(R.string.downloadDialogMessage))
                 .setPositiveButton("Download",new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
