@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18dp"
-        android:text="No Downloads In Queue"
+        android:text="@string/noDownloads"
         android:gravity="top|center"
         android:id="@+id/tvCurrentDownload"
         android:layout_alignTop="@+id/progressBar"

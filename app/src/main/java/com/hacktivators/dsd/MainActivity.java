@@ -40,7 +40,13 @@ public class MainActivity extends Activity {
     ListView downloadList;
     ArrayList<String> dList;
     ArrayAdapter<String> dAdapter;
-    String urlE,title;
+    String urlE,title,
+            noDownloads=getString(R.string.noDownloads),
+            downloadFolder=getString(R.string.downloadFolderName),
+            proxyHost="10.10.0.23",
+            proxyUser="3ce47",
+            proxyPass="gandhi1996";
+    int porxyPort=8089;
     View dialogBox;
     LayoutInflater li;
     Proxy proxy=null;
@@ -62,8 +68,8 @@ public class MainActivity extends Activity {
         progressB=(ProgressBar)findViewById(R.id.progressBar);
         progressB.setIndeterminate(false);
         tvCurrentDownload=(TextView)findViewById(R.id.tvCurrentDownload);
-        tvCurrentDownload.setText("No Downloads in Queue");
-        createDirIfNotExits("Download_DSD");
+        tvCurrentDownload.setText(noDownloads);
+        createDirIfNotExits(downloadFolder);
         sysProperties=System.getProperties();
         fab=(FloatingActionButton)findViewById(R.id.btnFab);
         fab.setOnClickListener(new View.OnClickListener(){
@@ -78,8 +84,8 @@ public class MainActivity extends Activity {
         new AlertDialog.Builder(this)
                 .setView(dialogBox)
                 .setIcon(R.mipmap.ic_launcher)
-                .setTitle("New Download")
-                .setMessage("Add new Download Task")
+                .setTitle(getString(R.string.downloadDialogTitle))
+                .setMessage(getString(R.string.downlaodDialogMessage))
                 .setPositiveButton("Download",new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -107,8 +113,8 @@ public class MainActivity extends Activity {
                 .show();
     }
     private String getFileName(String url,int fullOrWExtOrWOExt){
-        String name=null;
-        int s,e=0;
+        String name;
+        int s,e;
         s=url.lastIndexOf('/');
         e=url.length();
         if(fullOrWExtOrWOExt==1) e=url.lastIndexOf('.');
@@ -169,7 +175,7 @@ public class MainActivity extends Activity {
         String nameE=name,nameWOExt=getFileName(name,1),ext=getFileName(name,2);;
         boolean isExits=false;
         do{
-            file=new File(Environment.getExternalStorageDirectory()+"/Download_DSD",nameE);
+            file=new File(Environment.getExternalStorageDirectory()+"/"+downloadFolder,nameE);
             if(file.exists()){
                 isExits=true;
                 i++;
@@ -196,12 +202,12 @@ public class MainActivity extends Activity {
             try{
                 URL url=new URL(urlList[0]);
                 if(isProxyUsed){
-                    proxy=new Proxy(Proxy.Type.HTTP,new InetSocketAddress("10.10.0.23",8089));
+                    proxy=new Proxy(Proxy.Type.HTTP,new InetSocketAddress(proxyHost,porxyPort));
                     if(isAuthReq){
                         Authenticator.setDefault(new Authenticator() {
                             @Override
                             protected PasswordAuthentication getPasswordAuthentication() {
-                                return (new PasswordAuthentication("2ce47","gandhi1996".toCharArray()));
+                                return (new PasswordAuthentication(proxyUser,proxyPass.toCharArray()));
                             }
                         });
                     }
@@ -218,7 +224,7 @@ public class MainActivity extends Activity {
                 int fileSize=cn.getContentLength();
                 in=cn.getInputStream();
                 name=checkFileName(name);
-                out=new FileOutputStream(Environment.getExternalStorageDirectory()+"/Download_DSD/"+name);
+                out=new FileOutputStream(Environment.getExternalStorageDirectory()+"/"+downloadFolder+"/"+name);
                 byte data[]=new byte[4096];
                 long total=0;
                 int cnt;
@@ -265,12 +271,12 @@ public class MainActivity extends Activity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if(result!=null)
-                Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+                Toast.makeText(context,getString(R.string.downloadError)+result, Toast.LENGTH_LONG).show();
             else
-                Toast.makeText(context,"File downloaded Sucessfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,getString(R.string.downloadSuccessful), Toast.LENGTH_SHORT).show();
             progressB.setProgress(0);
             progressB.setVisibility(View.INVISIBLE);
-            tvCurrentDownload.setText("No Downloads in Queue");
+            tvCurrentDownload.setText(noDownloads);
         }
     }
 }
