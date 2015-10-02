@@ -40,9 +40,7 @@ public class MainActivity extends Activity {
     ListView downloadList;
     ArrayList<String> dList;
     ArrayAdapter<String> dAdapter;
-    String urlE,title,
-            noDownloads=getString(R.string.noDownloads),
-            downloadFolder=getString(R.string.downloadFolderName),
+    String urlE,title,noDownloads,downloadFolder,
             proxyHost="10.10.0.23",
             proxyUser="3ce47",
             proxyPass="gandhi1996";
@@ -69,6 +67,8 @@ public class MainActivity extends Activity {
         progressB.setIndeterminate(false);
         tvCurrentDownload=(TextView)findViewById(R.id.tvCurrentDownload);
         tvCurrentDownload.setText(noDownloads);
+        noDownloads=getString(R.string.noDownloads);
+        downloadFolder=getString(R.string.downloadFolderName);
         createDirIfNotExits(downloadFolder);
         sysProperties=System.getProperties();
         fab=(FloatingActionButton)findViewById(R.id.btnFab);
@@ -113,8 +113,8 @@ public class MainActivity extends Activity {
                 .show();
     }
     private String getFileName(String url,int fullOrWExtOrWOExt){
-        String name;
-        int s,e;
+        String name=null;
+        int s=0,e=0;
         s=url.lastIndexOf('/');
         e=url.length();
         if(fullOrWExtOrWOExt==1) e=url.lastIndexOf('.');
