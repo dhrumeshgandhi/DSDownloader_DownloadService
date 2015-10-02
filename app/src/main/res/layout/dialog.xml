@@ -6,9 +6,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="18dp"
-        android:layout_toRightOf="@+id/textView1"
-        android:ems="10" >
+        android:ems="10"
+        android:layout_toEndOf="@+id/textView2">
     </EditText>
 
     <TextView
@@ -21,15 +20,6 @@
         android:text="@string/url"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Spinner
-        android:id="@+id/storage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView2"
-        android:layout_alignRight="@+id/et_url"
-        android:layout_toRightOf="@+id/textView2"
-        android:entries="@array/storage_list" />
-
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
@@ -39,5 +29,15 @@
         android:layout_marginTop="36dp"
         android:text="@string/saveto"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_saveTo"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2" />
 
 </RelativeLayout>

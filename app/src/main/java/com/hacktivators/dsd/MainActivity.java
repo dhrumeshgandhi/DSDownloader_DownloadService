@@ -81,6 +81,8 @@ public class MainActivity extends Activity {
     }
     public void openDialog(View v){
         dialogBox=li.inflate(R.layout.dialog, null);
+        final EditText saveTo=(EditText)dialogBox.findViewById(R.id.et_saveTo);
+        saveTo.setText(Environment.getExternalStorageDirectory() + "/" + downloadFolder);
         new AlertDialog.Builder(this)
                 .setView(dialogBox)
                 .setIcon(R.mipmap.ic_launcher)
@@ -92,12 +94,12 @@ public class MainActivity extends Activity {
                         String locX;
                         EditText url = (EditText) dialogBox.findViewById(R.id.et_url);
                         urlE = url.getText().toString();
-                        Spinner loc=(Spinner) dialogBox.findViewById(R.id.storage);
-                        locX=loc.getSelectedItem().toString();
-                        title=getFileName(urlE,0);
-                        DownloadService ds=new DownloadService(MainActivity.this,title);
+                        locX=saveTo.getText().toString();
+                        Toast.makeText(context,locX,Toast.LENGTH_SHORT).show();
+                        title=getFileName(urlE, 0);
+                        DownloadService ds=new DownloadService(MainActivity.this,title,locX);
                         ds.execute(urlE);
-                        title=checkFileName(title);
+                        title=checkFileName(title,locX);
                         Toast.makeText(context,title,Toast.LENGTH_SHORT).show();
                         addToList(title);
                         dialog.dismiss();
@@ -169,13 +171,13 @@ public class MainActivity extends Activity {
             file.mkdirs();
         }
     }
-    private String checkFileName(String name){
+    private String checkFileName(String name,String loc){
         File file;
         int i=0;
         String nameE=name,nameWOExt=getFileName(name,1),ext=getFileName(name,2);;
         boolean isExits=false;
         do{
-            file=new File(Environment.getExternalStorageDirectory()+"/"+downloadFolder,nameE);
+            file=new File(loc,nameE);
             if(file.exists()){
                 isExits=true;
                 i++;
@@ -189,10 +191,11 @@ public class MainActivity extends Activity {
     private class DownloadService extends AsyncTask<String,Integer,String> {
 
         private Context context;
-        String name;
-        public DownloadService(Context context,String name){
+        String name,loc;
+        public DownloadService(Context context,String name,String loc){
             this.context=context;
             this.name=name;
+            this.loc=loc;
         }
         @Override
         protected String doInBackground(String... urlList) {
@@ -223,8 +226,8 @@ public class MainActivity extends Activity {
                 }
                 int fileSize=cn.getContentLength();
                 in=cn.getInputStream();
-                name=checkFileName(name);
-                out=new FileOutputStream(Environment.getExternalStorageDirectory()+"/"+downloadFolder+"/"+name);
+                name=checkFileName(name,loc);
+                out = new FileOutputStream(loc + "/" + name);
                 byte data[]=new byte[4096];
                 long total=0;
                 int cnt;
