@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="storage_list" >
+        <item>Phone (Internal Storage)</item>
+        <item>SD Card (External Storage)</item>
+    </string-array>
+    <string-array
+        name="list_download">
+        <item>a</item>
+    </string-array>
+
+</resources>
