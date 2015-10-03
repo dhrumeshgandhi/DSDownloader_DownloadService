@@ -23,7 +23,8 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.io.File;
@@ -98,7 +99,7 @@ public class MainActivity extends Activity {
         progressB.setIndeterminate(true);
         sysProperties=System.getProperties();
         fab=(FloatingActionButton)findViewById(R.id.btnFab);
-        fab.setOnClickListener(new View.OnClickListener(){
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openDialog(null);
@@ -106,10 +107,22 @@ public class MainActivity extends Activity {
         });
         tvCurrentDownload.setText(noDownloads);
         if((i=getIntent())!=null && Intent.ACTION_VIEW.equals(i.getAction())){
-            Toast.makeText(context,i.getAction(),Toast.LENGTH_LONG).show();
             String url=i.getData().toString();
             openDialog(url);
         }
+        if(!isMyServiceRunning(ClipBoardWatcher.class)) {
+            i = new Intent(this, ClipBoardWatcher.class);
+            startService(i);
+        }
+    }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
     public void openDialog(final String link){
         dialogBox=li.inflate(R.layout.dialog, null);

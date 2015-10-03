@@ -31,6 +31,8 @@
                 <data android:mimeType="*/*"/>
             </intent-filter>
         </activity>
+        <service android:name=".ClipBoardWatcher">
+        </service>
     </application>
 
 </manifest>
