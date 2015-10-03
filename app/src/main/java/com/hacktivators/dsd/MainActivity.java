@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -63,6 +64,8 @@ public class MainActivity extends Activity {
     FloatingActionButton fab;
     boolean isProxyUsed=false,isAuthReq=false;
     Intent i;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +117,45 @@ public class MainActivity extends Activity {
             i = new Intent(this, ClipBoardWatcher.class);
             startService(i);
         }
+        loadList();
+    }
+    private void loadList(){
+        pref=getSharedPreferences("Download List",MODE_PRIVATE);
+        ListViewItem item;
+        String title,date,size,path;
+        for(int i=0;i<pref.getInt("List_Size",0);i++){
+            title=pref.getString(i+"_Title",null);
+            date=pref.getString(i+"_Date",null);
+            size=pref.getString(i+"_Size",null);
+            path=pref.getString(i+"_Path",null);
+            item=new ListViewItem(title,date,size,path);
+            dList.add(item);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveList();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        loadList();
+    }
+
+    private void saveList(){
+        pref=context.getSharedPreferences("Download List",MODE_PRIVATE);
+        editor=pref.edit();
+        editor.putInt("List_Size",dList.size());
+        for(int i=0;i<dList.size();i++){
+            editor.putString(i+"_Title",dList.get(i).getTitle());
+            editor.putString(i+"_Path",dList.get(i).getPath());
+            editor.putString(i+"_Size",dList.get(i).getSize());
+            editor.putString(i+"_Date",dList.get(i).getDate());
+        }
+        editor.commit();
     }
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
