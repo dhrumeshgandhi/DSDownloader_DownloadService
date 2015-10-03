@@ -71,19 +71,19 @@ public class MainActivity extends Activity {
         dList=new ArrayList<ListViewItem>();
         dAdapter=new ListViewAdpter(this,dList);
         downloadList.setAdapter(dAdapter);
-        downloadList.setOnItemLongClickListener(new ListView.OnItemLongClickListener(){
+        downloadList.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                ListViewItem item=(ListViewItem)parent.getItemAtPosition(position);
-                String path=item.getPath(),
-                        title=item.getTitle();
-                File file=new File(path,title);
-                Long size=file.length();
-                Toast.makeText(context,size.toString(),Toast.LENGTH_SHORT).show();
-                Uri uri= Uri.fromFile(file);
-                Intent i= new Intent();
+                ListViewItem item = (ListViewItem) parent.getItemAtPosition(position);
+                String path = item.getPath(),
+                        title = item.getTitle();
+                File file = new File(path, title);
+                Long size = file.length();
+                Toast.makeText(context, size.toString(), Toast.LENGTH_SHORT).show();
+                Uri uri = Uri.fromFile(file);
+                Intent i = new Intent();
                 i.setAction(Intent.ACTION_VIEW);
-                i.setDataAndType(uri,"*/*");
+                i.setDataAndType(uri, "*/*");
                 startActivity(i);
                 return true;
             }
@@ -104,7 +104,9 @@ public class MainActivity extends Activity {
                 openDialog(null);
             }
         });
-        if((i=getIntent())!=null && i.getAction()==Intent.ACTION_VIEW){
+        tvCurrentDownload.setText(noDownloads);
+        if((i=getIntent())!=null && Intent.ACTION_VIEW.equals(i.getAction())){
+            Toast.makeText(context,i.getAction(),Toast.LENGTH_LONG).show();
             String url=i.getData().toString();
             openDialog(url);
         }
@@ -133,7 +135,7 @@ public class MainActivity extends Activity {
                         title=checkFileName(title,locX);
                         Toast.makeText(context,title,Toast.LENGTH_SHORT).show();
                         addToList(new ListViewItem(title,
-                                        Calendar.getInstance().getTime().toString(),
+                                        getDateTime(),
                                         getFileSize(urlE),locX));
                         dialog.dismiss();
                     }
@@ -147,8 +149,10 @@ public class MainActivity extends Activity {
                 .create()
                 .show();
     }
-    private void download(){
-
+    private String getDateTime(){
+        String datetime=Calendar.getInstance().getTime().toString();
+        datetime=datetime.substring(4, 20);
+        return datetime;
     }
     private String getFileName(String url,int fullOrWExtOrWOExt){
         String name;
